@@ -1,0 +1,77 @@
+[{
+    "name": "kind",
+    "mode": "nullable",
+    "type": "string"
+  },
+  {
+    "name": "fullName",
+    "type": "string",
+    "mode": "required"
+  },
+  {
+    "name": "age",
+    "type": "integer",
+    "mode": "nullable"
+  },
+  {
+    "name": "gender",
+    "type": "string",
+    "mode": "nullable"
+  },
+  { "name": "phoneNumber",
+    "type": "record",
+    "mode": "nullable",
+    "fields": [
+    {
+       "name": "areaCode",
+       "type": "integer",
+       "mode": "nullable"
+    },
+    {
+       "name": "number",
+       "type": "integer",
+       "mode": "nullable"
+    }
+   ]
+  },
+  {
+    "name": "children",
+    "type": "record",
+    "mode": "repeated",
+    "fields": [
+    {
+       "name": "name",
+       "type": "string",
+       "mode": "nullable"
+    },
+    {
+       "name": "gender",
+       "type": "string",
+       "mode": "nullable"
+    },
+    {
+       "name": "age",
+       "type": "integer",
+       "mode": "nullable"
+    }
+   ]
+  },
+  {
+    "name": "citiesLived",
+    "type": "record",
+    "mode": "repeated",
+    "fields": [
+    {
+       "name": "place",
+       "type": "string",
+       "mode": "nullable"
+    },
+    {
+       "name": "yearsLived",
+       "type": "integer",
+       "mode": "repeated"
+    }
+   ]
+  }
+]
+
