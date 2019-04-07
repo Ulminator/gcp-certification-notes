@@ -2327,6 +2327,7 @@ Images
 			# Allows custom maintenance on machine
 
 	3 Interconnection Options
+		- VPN or Dedicated Interconnect or Direct and Carrier Peering
 
 		- Virtual Private Network using Cloud Router
 			- Connects your on premise network to the Google Cloud VPC
@@ -2452,7 +2453,129 @@ Images
 			- Can transfer large amounts of data between networks
 				- Good for migrations to the cloud
 			- More cost effective than using high bandwidth internet connections or using VPN tunnels
+			- Capacity of a single connection is 10Gbps (also minimum deployment per location)
+				- Maximum of 8 connections supported
+			- No encryption (need in application layer)
+
+			- Cross connect between the Google network and the on premise router in a common colocation facility	 (GOOGLE PEERING EDGE)
+			- Can also use a Cloud Router too
+
+			Benefits
+				- Does not traverse the public internet.
+					- Less hops, fewer points of failure
+				- Can use internal IP addresses over a dedicated connection
+					- Traffic that uses external IP is considered egress and may be billed higher.
+				- Scale connection based on needs up to 80Gbps
+				- Cost of egress traffic from VPC to on-premise network reduced
 
 		- Direct and Carrier Peering
+			Direct
+				- Direct connection between on-premise network and Google at Google's `edge network locations`
+				- BGP routes exchanges for dynamic routing
+				- Can be used to reach all of Google's services including the full suite of GCP products
+				- Special billing rate for GCP egress traffic, other traffic billed at standard GCP rates
 
+			Carrier
+				- Enterprise grade network services connecting your infrastructure to Google using a service provider
+				- Can get higher availability and lower latency using one or more links
+				- No Google SLA, the SLA depends on the carrier
+				- Special billing rate for GCP egress traffic, other traffic billed at standard GCP rates
 		
+	Connecting VPC Networks
+		- Shared VPC or VPC Network Peering
+		- Shared VPC
+			- XPN (Cross-Project Networking)
+			- Multiple projects, 1 VPC
+			- Creates a VPC network of RFC1918 IP spaces that associated projects can use
+			- Firewall rules and policies apply to all projects on the network
+
+			- User needs Compute Enginer | Compute Shared VPC Admin permissions
+
+			Ex. 
+				- Create a host project
+					- Project that hosts sharable VPC networking resources within a Cloud Organization
+				- Create multiple subnets that correspond to service projects that you want in the network
+					- Service Project: Project that has permission to use the shared VPC networking resources from the host project
+					- Each service project could correlate to departments in your organization. Each responsible for thier own billing
+
+			Host and Service Projects
+				- A service project can only be associated with a single host
+				- A project cannot be a host as well as a service project at the same time
+				- Instances in a project can only be assigned external IPs from the same project
+				- Existing projects can join shared VPC networks
+				- Instances on a shared VPC need to be created explicitely for the VPC
+					- Instances cannot be migrated over
+
+			Standard Use Case
+				- Two Tier Web Service
+					- A different team owns the Tier 1 and Tier 2 services
+						- External clients go to external Load Balancer
+						- This goes to Tier 1 (frontend) Service which then goes to Internal Load Balancer to Tier 2 (backend) services
+					- Each team can deploy and operate its services independently
+					- Each project billed separately
+					- Each project admin can manage their own resources
+					- A single group of network and security admins can be responsible for the shared VPC
+
+		- VPC Network Peering
+			- Allows private RFC 1918 connectivity across 2 VPC networks
+			- Networks can be in the same or in different projects
+			- Network peering can be broken unilaterally
+			- IP addresses cannot conflict across all peering connections
+			- Build SaaS ecosystems in GCP
+				- Services can be made available privately across different VPC networks
+			- Useful for organizations:
+				- With several network administrative domains
+				- Which want to peer with other organizations on the GCP
+
+			Benefits
+				- Lower latency as compared with public IP networking
+				- Better security since services need not expose an external IP address
+				- Using internal IPs for traffic avoids egress bandwidth pricing on the GCP
+
+			Properties
+				- Peered networks are administratively separate
+					- Routes, firewalls, VPNs and traffic management applied independently
+				- One VPC can peer with multiple networks with a limit of 25
+					- Peering for 1 VPC network can be configured even before the other network is created.
+				- Only directly peered networks can communicate with each other
+					- If A peers with B and B peers with C, A cannot communicate with C using internal IPs
+				- A load balancer in network A will apply automatically to network B (no additional configuration needed)
+		
+		- Peered Networks and Shared VPCs
+			- A shared VPC with 1 host and 2 service projects
+			- Host peers with another VPC
+				- All VMs can communicate with each other via internal IP addresses
+			- Can also have direct peering between 2 Shared VPCs
+
+		- Peered Networks and Multiple Network Interface Cards (NICs)
+			- VM has two network interfaces - one in network A (IP1) and one in Network B (IP2)
+			- Network B and C are peered with each other.
+				- Network A is standalone, C can only see IP2
+			- IP1 on network A cannot see any instanes on Network B or C
+
+	Cloud DNS
+		- A high performance, resilient, global Domain Name System service that publishes your domain names to the global DNS in a cost-effective way.
+
+		- Hierarchical distributed database that lets you store IP addresses and other data and look them up by name.
+		- Publish zones and records in the DNS
+		- No burden of managing your own DNS server
+
+		Managed Zone
+			- Entity that manages DNS records for a given suffix (example.com)
+			- Maintained by Cloud DNS
+
+		Record Types
+			- A: Address record - Maps hostnames to IPv4 addresses
+			- SOA: Start of Authority - Specifies authoritative information on a managed zone
+			- MX: Mail Exchange used to route requests to mail servers
+			- NS: Name Server record - Delegates a DNS zone to an authoritative server
+
+		Resource Record Changes
+			- The changes are first made to the authoritative servers and is then picked up by the DNS resolvers when their cache expires
+	
+	Legacy GCP Netowrks
+		- Not recommended
+		- Instance IP addresses are not grouped by region or zone
+		- No subnets
+		- Random and non-contiguous IP addresses
+		- Only possible to create only through gcloud CLI and REST API
