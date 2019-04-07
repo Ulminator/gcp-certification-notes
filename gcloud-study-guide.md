@@ -2579,3 +2579,59 @@ Images
 		- No subnets
 		- Random and non-contiguous IP addresses
 		- Only possible to create only through gcloud CLI and REST API
+
+## Managed Instance Groups and Load Balancing
+
+	Overview
+		- Pool of similar machines which can be scaled automatically.
+		- Load balancing can be external or internal, global or regional
+		- Basic components of HTTP(S) load balancing - target proxy, URL map, backend service and backends
+		- Use cases and architecture diagrams for all the load balancing types HTTP(S), SSL proxy, TCP proxy, network and internal load balancing
+
+	Instance Groups
+		- A group of machines which can be created and managed together to avoid controlling each instance in the project.
+
+	Instance Template
+		- Defines the machine type, image, zone and other properties of an instance. 
+		- A way to save the instance configuration to use it later to create new instances or groups of instances.
+		- Global resource not bound to a zone or a region.
+		- Can reference zonal resources such as a persistent disk
+			- In such cases can be used only within the zone.
+
+	Managed Instance Groups
+		- Uses an instance template to create a group of identical instances.
+		- Changes to the instance group changes all instances in the group.
+		- Can automatically scale the number of instances in the group.
+		- Work with load balancing to distribute traffic across instances.
+		- If an instance stops, crashes or is deleted the group automatically recreates the instance with the same template.
+		- Can identify and recreate unhealthy instance in a group (autohealing)
+
+		2 Categories
+			Zonal
+				- Choose if you want lower latency and avoid cross-zone communication.
+			Regional
+				- Prefer this so application load can be spread across multiple zones.
+				- Protects against failures within a single zone.
+
+		Health Checks and Autohealing
+			- A MIG applies health checks to monitor the instances in the group.
+			- If a service has fails on an instance, that instance is recreated (autohealing)
+			- Similar to health checks used in load balancing but the objective is different
+				- LB health checks are used to determine where to send traffic.
+				- MIG health checks are used to recreate instances.
+				- Typically configure health checks for both LB and MIGs
+			- The new instance is recreated based on the template
+			- Disk data might be lost unless explicitely snapshotted
+
+		Configuring Health Checks
+			- Check Interval
+			- Timeout
+			- Health Threshold
+				- How many consecutive "healthy" responses indicate that the VM is healthy.
+			- Unhealthy Threshold
+				- How many consecutive "unhealthy" responses indicate that the VM is unhealthy.
+
+	Unmanaged Instance Groups
+		- Groups of dissimilar instances that you can add and remove from the group.
+		- Do not offer autoscaling, rolling updates, or instance templates
+		- Not recommended, used only when you need to apply `load balancing to pre-existing` configurations
