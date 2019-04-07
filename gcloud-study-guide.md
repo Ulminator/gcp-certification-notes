@@ -2115,3 +2115,303 @@ Images
 		- Created when intitializing a project
 		- Auto Mode network
 		- Comes with a number of routes and firewall rules preconfigured
+
+	IP Addresses
+		- Can be assigned to resources. Ex. VMs
+		- Each VM has an internal IP address
+		- One or more secondary IP addresses
+		- Can also have an external IP
+
+		Internal IP
+			- Use within VPC
+			- Cannot be used across VPCs unless we have special configuration (like shared VPCs or VPNs)
+			- Can be ephemeral or static, typically ephemeral
+				- Okay with address changing during reboot, or every 24hrs etc.
+			- VMs know their internal IP address (VM name and IP is availbale to the network DNS)
+				"instance-1.c.test-project123.internal"
+			- VPC networks automatically resolve internal IP addresses to host names
+
+		External IP
+			- Use to communicate across VPCs
+			- Traffic using external IP addresses can cause additional billing charges
+			- Can be ephemeral or static
+				- Static: Reserved - charged when not assigned to VM
+			- VMs are not aware of their external IP address
+			- Need to publish public DNS records to point to the instance with the external IP
+			- Can use Cloud DNS
+
+		Ephemeral
+			- Available only till the VM is stopped, restarted or terminated
+			- No distinction between regional and global IP addresses
+			- Can turn ephemeral into static
+
+		Static
+			- Permanently assigned to a project and available till explicitely detached
+			- Regional or global resources
+				- Regional
+					- Allows resources of the region to use the address
+				- Global
+					- Used only for global forwarding rules in global load balancing
+			- Unassigned static IPs incur a cost
+				- Once assigned, free to use
+	
+		Alias IP Ranges
+			- A single service on a VM requires just one IP address
+			- Multiple services on the same VM may need different IP addresses
+			- Subnets have a primary and secondary CIDR range
+				- Primary IP of VM drawn from primary
+				- Containers/services in the VM can use secondary range
+			- Using IP aliasing can set up multiple IP addresses drawn from the primary or secondary CIDR ranges
+			- VPCs automatically set up routes for the IPs
+			- Containers don't need their own routing, simplifies traffic management
+			- Can separate infrastructure from containers (infra will draw from primary, containers from secondary)
+
+	Working With Static Addresses
+		- Go to VPC network
+		- Go to external IP addresses
+		- Reserve static address
+			- Give a name
+			- Select region
+			- IP version (IPv4 or IPv6)
+		- Create a VM instance
+			- Networking
+				- Specify external IP to address created previously
+	
+	Routes
+		- A route is a mapping of an IP range to a destination. Routes tell the VPC network where to send packets destined for a particular IP address.
+
+		2 Default Routes for a Network
+			- Direct packets to destinations to specify destinations which carry it to the outside world (uses external IP addresses)
+			- Allow instances on a VPC to send packets directly to each other (uses internal IP addresses)
+
+			The existence of a route does not mean that a packet will get to the destination
+				- Firewall rules have to be configured
+
+		Creating a Network
+			- Default route for internet traffic
+			- One route for every subnet that is created
+				- Ensures traffic from rest of network can reach that subnet
+
+		What is a route made of?
+			- name: User friendly name
+			- network: Name of the network it applies to
+			- destRange: The destination IP range that this route applies to
+			- instanceTags: Instance tages that this route applies to, applies to all instances if empty
+				- Can use IF you want route to apply to one specific instance
+			- priority: Used to break ties in case of multiple matches
+			AND one of
+				- nextHopInstance: Fully qualified URL. Instance must already exist
+				- nextHopIP: The IP address
+				- nextHopNetwork: URL of network
+				- nextHopGateway: URL of gateway
+				- nextHopVpnTunnel: URL of VPN tunnel
+			
+		Instance Routing Tables
+			- Every route in a VPC might map to 0 or more instances
+			- Routes apply to an instance if the tag of the route and insance match
+			- If no tag, then the route applies to all instances in a network
+			- All routes together form a routes collection
+
+		Using Routes
+			- Many-to-one NATs (network address translations)
+				- Multiple hosts mapped to one public IP
+			- Transparent proxies
+				- Direct all external traffic to one machine
+
+	Firewall Rules
+		- Allow or deny specific connections based on a combination of IP addresses, ports, and protocol
+		- Rules exist between instances in the same network
+
+		- Action: Allow or Deny
+		- Direction: Ingress or Egress
+		- Source IPs (ingress), Destination IPs (egress)
+		- Protocol and Port
+		- Specific instance names
+			- Subset of machines
+			- Can specify instance tags and service acct as well.
+		- Priorities and tiebreakers
+
+		GCP firewall rules are stateful
+			- If a connection is allowed, all traffic in the flow is allowed, in both directions.
+		
+		Rule Assignment
+			- Every rule is assigned to every instance in a network
+			- Rule assignment can be restricted using tags or service accounts
+				- Allow traffic from instances with source tag "backend"
+				- Deny traffic to instances running as service account "blah@appspot.gcpserviceaccount.com"
+		
+		Service Accounts
+			- Represents the identity that the instance runs with (use these if possible for firewall)
+			- An instance can have just one service account
+			- Restricted by IAM permissions, permissions to start an instance with a service account has to be explicitely given
+			- Changing a service account requires stopping and restarting an instance
+		
+		Tags
+			- Logically group resources for billing or applying firewalls
+			- An instance can have any number of tags
+			- Tags can be changed by any user who can edit an instance
+			- Changing tags is metadata update and is a much lighter operation
+			
+		- Only IPv4 addresses are supported in a firewall rule
+		- Firewall rules are specific to a network. They cannot be shared between networks (shared VPC this works tho)
+		- Tags and service accounts cannot be used together in the same firewall rule
+
+		Implied Rules
+			- A default "allow egress" rule
+				- Allows all egress connections.
+				- Rule has a priority of 65535 (lowest priority)
+			- A default "deny ingress" rule
+				- Deny all ingress connection.
+				- Rule has a priority of 65535 (lowest priority)
+		
+		Firewall Rules for "Default" Network
+			- default-allow-internal
+				- Allows ingress network connections of any protocol and port between VM instances on the network
+			- default-allow-ssh
+				- Allows ingress TCP connections from any source to any instance on the network over port 22
+			- default-allow-icmp
+				- Allows ingress ICMP (internet control message protocol) traffic from any source to any instance on the network
+					- Used for error reporting
+				- icmp is used with ping
+			- default-allow-rdp
+				- Allows ingress remote desktop protocol traffic to TCP port 3389
+
+		Egress Connections
+			- Destination CIDR ranges, protocols, ports
+			- Destinations with specific tags or service accounts
+				- Allow: Permit matching egress
+				- Deny: Block matching egress
+
+		Ingress Connections
+			- Source CIDR ranges, protocols, ports
+			- Sources with specific tags or service accounts
+				- Allow: Permit matching ingress
+				- Deny: Block matching ingress
+
+	Cannot ping instance in other networks with internal reference (DNS scoped to network)
+	Can however ping it with external ip
+
+	sudo apt-get install traceroute
+	sudo traceroute <instance name> -I
+		- Use this to determine where pings fail
+
+	Why convert automode to custom mode?
+		- No option to select subnets. Can only delete entire network.
+
+	Expand a Subnet (Ex. /26 -> /23)
+		`gcloud compute networks subnet \
+		expand-ip-range <subnet name> \
+		--prefix length 23 \
+		--region us-east1`
+
+	Connecting via Cloud Shell SSH uses a google IP, so restricting access to a VM to only your actual IP will not work.
+
+	Typically need external IP to SSH into VM.
+		- Can use a VPN that connects from on prem network to the VPC
+			gcloud compute ssh [INTERNAL_INSTANCE_NAME] --internal-ip
+		- Or use a bastion host
+
+	Bastion Host
+		- Maintenance server
+
+		# Create simple web app (webserver)
+		sudo apt-get update
+		sudo apt-get install apache2 -y
+		echo '<!doctype html><html><body><h1>Hi</h1></body></html> | tee /var/www/html/index.html
+		# Remove external IP
+
+		Create an instance
+			- SSH into host
+			- ssh -a webserver
+			# Can be used to connect to instances without external ip
+			# Allows custom maintenance on machine
+
+	3 Interconnection Options
+
+		- Virtual Private Network using Cloud Router
+			- Connects your on premise network to the Google Cloud VPC
+			- Only IPsec gateway to gateway scenarios are supported, does not work with client software on a laptop
+				- Peer gateway must have static external IP address (peer gateway to the on prem network)
+					- If behind firewall, allow IKE traffic
+				- CIDR range of on prem network should not conflict with cloud vpc
+			- Offers 99.9% service availability
+			- Traffic is encrypted by one VPN gateway and then decrypted by another VPN gateway
+				- Uses IKE version 1 or 2
+			- Supports both static and dynamic routes for traffic between on premise and cloud
+			- Can have multiple tunnels to a single VPN gateway, site to site VPN
+				- The same cloud vpn gateway can connect to multiple on prem networks
+			- VPN traffic has to traverse internet
+				- Higher latency and Lower throughput as compared to dedicated interconnect and peering options
+
+			```
+				# Create a VPN gateway
+				gcloud compute target-vpn-gateways \
+					create vpn-1 \
+					--network vpn-network-1 \
+					--region asia-east1
+				# Link static IP address to that gateway
+				gcloud compute addresses create --region asia-east1 vpn-1-static-ip
+				# grab the new ip
+				gcloud compute addresses list
+				gcloud compute \
+					forwarding-rules create vpn-1-esp \
+					--region asia-east1 \
+					--ip-protocol ESP \
+					--address <address that was created> \
+					--target-vpn-gateway vpn-1
+				gcloud compute \
+					forwarding-rules create vpn-1-udp500 \
+					--region asia-east1 \
+					--ip-protocol UDP \
+					--ports 500 \
+					--address <address that was created> \
+					--target-vpn-gateway vpn-1
+				gcloud compute \
+					forwarding-rules create vpn-1-udp4500 \
+					--region asia-east1 \
+					--ip-protocol UDP \
+					--ports 4500 \
+					--address <address that was created> \
+					--target-vpn-gateway vpn-1
+				gcloud compute target-vpn-gateways list
+
+				# Create a tunnel
+				gcloud compute \
+					vpn-tunnels create tunnel1to2
+						--peer-address <address for second gateway (vpn-2)> \
+						--region asia-east1 \
+						--ike-version 2 \
+						--shared-secret <secret> \
+						--target-vpn-gateway vpn-1 \
+						--local-traffic-selector 0.0.0.0/0 \
+						--remote-traffic-selector 0.0.0.0/
+				gcloud compute \
+					vpn-tunnels create tunnel2to1
+						--peer-address <address for first gateway (vpn-1)> \
+						--region asia-south1 \
+						--ike-version 2 \
+						--shared-secret <secret> \
+						--target-vpn-gateway vpn-2 \
+						--local-traffic-selector 0.0.0.0/0 \
+						--remote-traffic-selector 0.0.0.0/
+				gcloud compute vpn-tunnels list
+
+				# Create static routes
+				gcloud compute \
+					routes create route1to2 \
+					--network  vpn-network-1 \
+					--next-hop-vpn-tunnel tunnel1to2 \
+					--next-hop-vpn-tunnel-region asia-east1
+					--destination-range 10.1.3.0/24 # address range of vpc-network-2
+				gcloud compute \
+					routes create route2to1 \
+					--network  vpn-network-2 \
+					--next-hop-vpn-tunnel tunnel2to1 \
+					--next-hop-vpn-tunnel-region asia-south1
+					--destination-range 10.5.4.0/24
+				
+				# Can now go into the VMs and ping across VPCs
+			```
+		
+		- Dedicated Interconnect
+		- Direct and Carrier Peering
