@@ -227,3 +227,15 @@ Identify which images depict happy people and which ones depict unhappy people.
 
 What feature type would we specify in our request to the vision API if we wanted to identify famous places like the Eiffel Tower?
 	- Specify feature to be LANDMARK_DETECTION
+
+Advantages obtained by the use of VPC
+	- Convenience of DNS lookup within instances
+	- Multi-tenancy
+	- Firewall isolation between different components of an app architecture
+
+Networking withing the same VPC in a project
+	- Instances in the same VPC use private IP addresses to communicate with each other
+	- Instances in the same VPC can use DNS to communicate with each other using instance names
+	- Firewalls can be erected between subnets inside the same VPC project
+
+Projects and VPCs are global; subnets within a VPC are regional
