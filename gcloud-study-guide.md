@@ -2412,6 +2412,47 @@ Images
 				
 				# Can now go into the VMs and ping across VPCs
 			```
+			- Need to configure Cloud Router or Static Routes
+
+			Cloud Router
+				- Dynamically exchange routes between Google VPCs and on premise networks
+				- Fully distributed and managed Google cloud service
+				- Peers with on premise gateway or router to exchange route information
+				- Uses the BGP or Border Gateway Protocol
+
+			Static Routes
+				- Create and maintain a routing table
+				- A topology change in the network requires routes to be manually updated
+				- Cannot re-route traffic automatically if link fails
+				- Suitable for small networks with stable topologies
+				- Routers do not advertise routes
+				- If new rack in peer network
+					- New routes need to be added to the cloud VPC to reach the new subnet
+					- VPN tunnel will need to be torn down and re-established to include the new subnet
+					- Static routes are slow to converge as updates are manual
+			
+			Dynamic Routes
+				- Can be implemented using Cloud Router on GCP
+				- Uses BGP to exchange route information between networks
+				- Networks automatically and rapidly discover changes
+				- Changes implemented without disrupting traffic
+				- Ex.
+					- A Cloud Router belongs to a particular network and a particular region.
+					- The IP address of the Cloud Router and the gateway router should both be link local IP addresses (valid only for communication within the network link)
+				
+				Dynamic Routing Mode
+					- Determines which subnets are visible to Cloud Routers
+					- Global Dynamic Routing
+						- Cloud Router advertises all subnets in the VPC network to the on-premise router
+					- Regional Dynamic Routing
+						- Advertises and propogates only those routes in its local region.
 		
 		- Dedicated Interconnect
+			- Direct physical connection and RFC 1918 communication between on-premise network and cloud VPC
+			- Can transfer large amounts of data between networks
+				- Good for migrations to the cloud
+			- More cost effective than using high bandwidth internet connections or using VPN tunnels
+
 		- Direct and Carrier Peering
+
+		
