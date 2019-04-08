@@ -2793,3 +2793,132 @@ Images
 		# Two backend services for this load balancer
 		# Create path rules
 		```
+
+		SSL Proxy
+			- Encrypted but not HTTPS
+			- The usual combination is TCP/IP: network = IP, transpot = TCP, application = HTTP
+			- For secure traffic: add session layer = SSL, and application layer = HTTPS
+
+			- SSL Connections are terminated at the global layer, then proxied to the closest available instance group
+				- Terminated means we need a certificate on this proxy
+				- Makes fresh connections to backends - this can be SSL or non-SSL
+
+				```
+					# Create firewall rule on SSL load balancer for tcp:443
+					# Create some VMs
+					# Create an instance group
+						# Port name mapping: name: ssl-lb number: 443
+					# Create SSL Load Balancer
+						# Creating a backend - use named port from above; protocol SSL
+					# Create a certificate and apply to frontend of LB
+				```
+			
+		TCP Proxy
+			- Allows you to use a single IP address for all users around the world
+			- Advantage of transport layer load balancing:
+				- more intelligent routing possible than with network layer load balancing
+				- better security - TCP vulnerabilities can be patched at the load balancer itself
+		
+		Network Load Balancer
+			- Based on incoming IP protocol data, such as address, port, and protocol type
+			- Pass-through, regional load balancer - does not proxy connections for clients
+			- Use it to load balance UDP traffic, and TCP and SSL traffic
+			- Load balances traffic on ports that are not supported by SSL and TCP proxy load balancers
+				- SSL and TCP only support specified ports
+
+			Load Balancing Algorithm
+				- Picks an instance based on a hash of:
+					- source IP and port
+					- destination Ip and port
+					- protocol
+				- This means that incoming TCP connections are spread across instances and each new connection may go to a different instance.
+				- Regardless of session affinity setting, all packets for a connection are directed to the chosen instance until the connection is closed and have no impact on load balancing decisions for new incoming connections.
+				- This can result in imbalance between backends if long lived TCP connections are in use.
+			
+			Target Pools
+				- Network load balancing forwads traffic to target pools
+				- A group of instances which receive incoming traffic forwarding rules
+				- Can only be used with forwarding rules for TCP and UDP traffic
+				- Can have backup pools which will receive requests if the first pool is unhealthy
+				- failoverRatio is the ratio of healthy instances to failed instances in a pool
+				- If a primary target pool's ratio is below the failoverRatio traffic is sent to the backup pool
+
+			Health Checks
+				- Configure to check instance health in target pools
+				- Network load balancing uses legacy health checks for determining instance health
+
+			Firewall Rules
+				- HTTP health check probes are sent from the IP ranges 209.85.152.0/22, 209.85.204.0/22, and 35.191.0.0/16
+				- Load balancer uses the same ranges to connect to the instances
+				- Firewall rules should be configured to allow traffic from these IP ranges
+
+		Internal Load Balancing
+			- Private load balancing IP address that only your VPC instances can access
+				- All instances belong to the same VPC and region, but can be in different subnets
+			- Less latency, more security
+			- No public IP needed
+			- Useful to balance requests from your frontend instances to your backend instances
+			
+			- Load balancing IP is from the same VPC network
+
+			Load Balancing Algorithm
+				- Backend instance for a client is selected using a hashing algorithm that takes instance health into consideration
+				- Using a 5 tuple hash, five params for hashing:
+					- Client source IP
+					- Client Port
+					- Destination IP (load balancing IP)
+					- Destination Port
+					- Protocol (TCP or UDP)
+
+				- Introduce session affinity by hashing on only some of the 5 params
+					- Hash based on 3-tuple (Client IP, Dest IP, Protocol)
+					- 2-tuple (Client IP, Dest IP)
+			
+			GCP Internal Load Balancing
+				- Not proxied - differs from traditional model
+				- Lightweight load balancing built on top of Andromeda network virtualization stack
+				- Provides software defined load balancing that directly delivers the traffic from the client instance to a backend instance
+
+			Use Case: 3 Tier Web App
+				- Clients connect to an external LB (HTTP(S))
+				- Frontend instances are connected to the backend instances using an internal load balancer
+
+	Autoscaling
+		- Helps your applications gracefully handle increases in traffic
+		- Reduces cost when load is lower
+		- Feature of managed instance groups (not supported for unmanaged)
+
+		- GKE has cluster autoscaling
+
+		- Autoscaling Policy
+			- Average CPU utilization
+			- Stackdriver monitoring metrics
+				- Built in or custom metrics
+				- Not all standar metrics are valid
+					- The metric must contain data for a single VM instance
+					- Must define how busy the resource is.
+			- HTTP(S) load balancing server capacity
+				- CPU utilization
+				- Maximum requests per second/instance
+			- Pub/Sub queuing workload (alpha)
+		- Target Utilization Level
+			- The level at which you want to maintain your VMs
+			- Interpreted differently based on the autoscaling policy that you've chosen.
+			- If utilization reaches 100% during times of heavy usage the autoscaler might increase the number of CPUs by
+				- 50% or 4 instances (whicher is larger)
+
+		Autoscalers with Multiple Policies
+			- Will scale based on the policy which provides the largest number of VMs in the group
+
+		```
+			# Create a VM
+			# Install whatever you want to start on reboot
+			sudo update-rc.d apache2 defaults
+			# Delete VM but retain boot
+			# Create custom image from boot
+			# Use that image in an instance group definition.
+		```
+
+# Ops and Security
+
+	StackDriver
