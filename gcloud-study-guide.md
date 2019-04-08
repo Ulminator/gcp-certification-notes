@@ -2635,3 +2635,161 @@ Images
 		- Groups of dissimilar instances that you can add and remove from the group.
 		- Do not offer autoscaling, rolling updates, or instance templates
 		- Not recommended, used only when you need to apply `load balancing to pre-existing` configurations
+
+	Load Balancing
+		- Reserve an External Static IP for use with the Load Balancer
+		- Load balancing and autoscaling for groups and instances
+		- Scale your application to support heavy traffic
+		- Detect and remove unhealthy VMs, healthy VMs automatically re-added
+		- Route traffic to the closest VM
+		- Fully managed service, redundant and highly available
+
+		- Rule of thumb: Load balancer in the highest layer possible
+			- Higher level encapsulates information at the lower levels
+
+		External
+			- Traffic from internet
+			- Global or Regional
+			Global
+				- HTTP/HTTPS (application layer)
+					- Cross-Regional or Content Based
+					- Distributes traffic based on:
+						- Proximity to user
+						- Requested URL
+						- or both
+					- How it works:
+						- Traffic from internet is sent to a global forwarding rule
+							- This determines which proxy (HTTP in this case) the traffic should be directed to
+						- Target proxy checks each request against a URL map to determine the appropriate backend service for the request
+							- HTTPS requires the target proxy to have a signed certificate to terminate the SSL connection
+						- Backend service directs each request to an appropriate backend based on serving capacity, zone, and instance health of its attached backends
+							- Backend service also sets up Session Affinity
+								- ALL requests from same client to same server based on either:
+									- client IP
+									- cookie 
+						- The health check of each backend instance is verified using either an HTTP health check or an HTTPS health check - if HTTPS, request is encrypted
+						- Actual request distribution to backend can happen based on CPU utilization or requests per instance
+							- Can configure managed instance groups to scale as traffic slaces
+						- MUST create firewall rules to allow requests from load balancer and health checker to get through to instances
+				- SSL Proxy (session layer)
+				- TCP Proxy (transport layer)
+			Regional
+				- Network (network layer)
+				- These correspond to the OSI Network Stack
+
+		Internal
+			- Traffic from within network
+			- Regional
+
+		Health Checks
+			- HTTP,HTTPS health checks
+				- Highest fidelity check
+					- Verify that web server is up and serving traffic, not just that the instance is healthy
+			- SSL health check
+				- Configure if your traffic is not HTTPS but is encrypted via SSL (TLS)
+			- TCP health checks
+				- For all TCP traffic that is not HTTP(S) or SSL(TLS)
+
+		Gloabal Forwarding Rule
+			- Route traffic by IP address, port, and protocol to a load balancing proxy
+			- Can only be used with global load balancing HTTP(S), SSL Proxy, and TCP Proxy
+			- Regional forwarding rules can be used with regional load balancing and individual instances
+
+		Target Proxy
+			- Referenced by one or more global forwarding rule
+			- Route the incoming requests to a URL map to determine where they should be sent
+				- TCP and SSL Proxies -> Routed directly to backend service (no url map)
+			- Specific to a protocol (HTTP, HTTPS, SSL, and TCP)
+			- Should have a SSL certificate if it terminates HTTPS connections (limit of 10 SSL cetificates)
+			- Can connect to backend services via HTTP or HTTPS
+				- For HTTPS, the VM instance also needs cert installed
+
+		URL Map
+			- Used to direct traffic to different instances based on incoming URL
+				Ex.
+					- http://example.com/audio -> backend service 1
+					- http://example.com/video -> backend service 2
+			- Default setting
+				- Only /* path matcher is created automatically and directs all traffic to the same backend service
+			- Typical settings
+				- Host rules -> Path matcher -> Path rules
+					- Host rules
+						- example.com, customer.com
+					- Path matcher and path rules
+						- /video
+					- Path rules
+						- /video/hd, /video/sd
+				- Traffic that does not match any of the rules are sent to default service
+
+		Backend Service
+			- Centralized service for managing backends
+			- Contain one or more instance groups which handle user requests
+			- Knows which instances it can use, how much traffic they can handle
+			- Monitors the health of backends and does not send traffic to unhealthy instances
+
+			Components
+				- Health Check: Polls instances to determine which one can receive requests
+					- HTTP(S), SSL and TCP
+					- GCP creates redundant copies of the health checker automatically, so health checks might happen more frequently than you expect
+				- Backends: Instance group of VMs which can be automatically scaled
+					- Synonymous to Instance Group
+					- Balancing Mode: Determines when the backend is at full usage.
+						- CPU utilization, requests per second
+					- Capacity Setting: A % of the balancing mode which determines the capacity of the backend.
+					- Can also be Backend Buckets
+						- Allow you to use Cloud Storage buckets with HTTP(S) load balancing
+						- Traffic is directed to the bucket instead of a backend
+						- Useful in load balancing requests to static content
+						- A path of / static can be sent to the storage bucket and all other paths fo to the instances
+				- Session Affinity: Attempts to send requests from the same client to the same VM
+					- Client IP: Hashes the IP address to send requests from the same IP to the same VM
+						- Requests from different users might look like its from the same IP
+						- Users which move networks might lose affinity
+					- Cookie: Issue a cookie named GCLB in the first request
+						- Subsequent requests from clients with the cookie are sent to the same instance
+				- Timeout: Time the backend service will wait fro a backend to respond
+
+		Load Distribution
+			- Uses CPU utilization of the backend or requests per second as the balancing mode.
+			- Maximum values can be specified for both.
+			- Short bursts of traffic above the limit can occur.
+
+			- Incoming requests are first sent to the region closest to the user, if that region has capacity.
+			- Traffic distributed amongst zone instances based on capacity.
+			- Round robin distribution across instances in a zone.
+			- Round robin can be overridden by session affinity.
+
+		Firewall Rules
+			- Allow traffic from 130.211.0.0/22 (load balancer) and 35.191.0.0/16 (health check) to reach your instances
+			- Allow traffic on the port that the global forwarding rule has been configured to use.
+
+		```
+		# Create a static external route for the load balancer
+		# Create a health check in compute/healthcheck section
+		# Create target pool and connect it to the health check
+		gcloud compute target-pools create <pool name> \
+			--region us-central1
+			--http-health-check <health check name>
+		gcloud compute target-pools add-instances <pool name> \
+			--instanes <instance 1>, <instance 2>, <instance 3> \
+			--instances-zone=us-central1-a
+		# Get the address of the static route created
+		gcloud compute addresses list
+		# Use it in forwarding rule
+		gcloud compute forwarding-rules create <rule name> \
+			--region us-central1 \ 
+			--ports 80 \ 
+			--address <previously created address>
+			--target-pool <pool name>
+		```
+
+		Content Based Load Balancer
+		```
+		# Create VPC netowork
+		# Create external ip for load balancer
+		# Create two instance groups
+		# Create 1 health checks for both instance groups
+		# Create load balancer
+		# Two backend services for this load balancer
+		# Create path rules
+		```
