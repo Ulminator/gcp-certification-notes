@@ -2922,3 +2922,65 @@ Images
 # Ops and Security
 
 	StackDriver
+		- Accounts
+			- Holds monitoring and other configuration information for a group of GCP projects and AWS accounts that are monitored together.
+
+		Types of Monitored Projects
+			- Hosting Projects
+				- Holds the monitoring configuration for the Stackdriver account - the dashboards, alert policies, uptime checks, and so on.
+				- To monitor multiple GCP projects, create a new StackDriver account in an empty hosting project.
+					- Don't use the hosting project for anything else.
+			- AWS Connector Projects
+				- When you add an AWS account to a StackDriver account, StackDriver Monitoring creates the AWS connector project for you, typically giving it a name beginning with AWS Link.
+				- The Monitoring and Logging agents on your EC2 instances send their metrics and logs to this connector project.
+				- If you use StackDriver logging from AWS, those logs will be in the AWS connector project (not in the host project of the Stackdriver account)
+				- Don't put any GCP resources in an AWS connector project
+					- Will not be monitored!
+			- Monitored Project
+				- Regular (non-AWS) projects within GCP that are being monitored.
+			
+		Metrics
+			Built in:
+				- CPU utilization of VM instances
+				- Number of tables in SQL databases
+				- Hundreds more...
+			Custom
+				- 3 Types
+					- Gauge Metrics
+					- Delta Metrics
+					- Cumulative Metrics
+			Metric Data available for 6 weeks.
+		
+		Metric Latency
+			- VM CPU utilization
+				- Once a minute, available with 3-4 minute lag
+			- If writing data programatically to metric time series
+				- First write takes a few minutes to show up
+				- Subsequent writes visible within seconds
+		
+		Monitored Resources
+			- VM instances
+			- Amazon EC2 instances, RDS databases
+			- Cloud Storage Buckets
+			- Pretty much anything in GCP
+		
+		Alerts and Notification
+			- Depends on service tier
+
+		Error Reporting
+			- App Engine
+				- Stack trace and severity of ERROR or higher automatically show up.
+			- App Engine Flexible Environment
+				- Anything written to stderr automatically shows up
+			- Compute Engine
+				- Instrument - Throw error in exception catch block
+					- Write to error stream using StackDriver client
+			- Amazon EC2
+				- Enable StackDriver logging
+		
+		Trace
+			- Distributed tracing system that collects latency data from Google App Engine, Google HTTP(S) load balancers, and applications instrumented with the StackDriver Trace SDKs
+			
+			- How long does it take you application to handle incoming requests from users or other applications
+			- How long it takes to complete operations like RPC calls performed when handling requests
+			- Round trip RPC calls to App Engine services like Datastore, URL Fetch, and Memcache
