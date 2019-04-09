@@ -2984,3 +2984,71 @@ Images
 			- How long does it take you application to handle incoming requests from users or other applications
 			- How long it takes to complete operations like RPC calls performed when handling requests
 			- Round trip RPC calls to App Engine services like Datastore, URL Fetch, and Memcache
+
+		Logging
+			- Includes a store for logs, a user interface (the Logs Viewer), and an API to manage logs programatically
+			- Allows you to:
+				- read and write log entries
+				- search and filter
+				- export your logs
+				- create log-based metrics
+
+			Types of Logs
+				- Audit Logs
+					- Permanent GCP logs (no retention period)
+					- Admin Activity Logs
+						- For actions that modify config or metadata
+						- Always on
+						- Not charged
+					- Data Access Logs?
+						- API calls that create modify or read user-provided data
+						- Need to be enabled (can be big)
+						- Always on for BigQuery
+						- Charged
+			
+			Service Tiers and Retention
+				- Basic -> No stackdriver account - free and 5GB cap
+				- Retention period of log data depends on tier
+
+			Using Logs
+				- Exporting to sinks
+					- Cloud Storage
+					- BigQuery datasets
+					- Pub/Sub topics
+				- Create metrics to view in stackdriver monitoring
+		
+	Deployment Manager
+		- Deployment is a collection of resources, deployed, and managed together.
+
+		Resource
+			- Represents a single API resource and provided by Google-managed base types.
+			- API resource provided by a Type Provider.
+			- To specify a resource - provide a Type for that resource.
+
+		Types
+			- Represent a single API resource or a set of resources (composite type)
+			- Base type - Creates single primitive resource and type provider used to create additional base types.
+			- Composite base types - Containe one or more templates.
+		
+		Configuration
+			- Describes all resources you want for a single deployment in a YAML
+			- Resources must contain 3 components
+				- Name: user defined string for id
+				- Type: type of resource being deployed
+				- Properties - params of the resource type
+		
+		Templates
+			- Parts of the configuration and abstracted into individual building blocks. Written in python or jinja2
+			- More flexible than individual configuration files and intended to support easy portability across deployments
+			- The interpretation of each template eventually must result in the same YAML syntax
+
+		Manifest
+			- Read only object contians original configuration
+			- At the time of updating Deployment Manager generates a manifest
+		
+		Runtime Configurator
+			- Lets you define and store a hierarchy of KV pairs in GCP
+			- Used to dynamically configure services, communicate service states, send notifications of changes to data and share information between multiple tiers of services
+			- Offers watcher and waiter services
+				watcher - return whenever KV pair changes
+				waiter - pause until certain # of services are running

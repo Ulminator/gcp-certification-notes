@@ -239,3 +239,8 @@ Networking withing the same VPC in a project
 	- Firewalls can be erected between subnets inside the same VPC project
 
 Projects and VPCs are global; subnets within a VPC are regional
+
+How are audit logs and data access logs different from each other?
+
+What role do templates play in GCP's deployment manager service?
+	- Reuse of config files
