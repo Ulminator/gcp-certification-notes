@@ -244,3 +244,21 @@ How are audit logs and data access logs different from each other?
 
 What role do templates play in GCP's deployment manager service?
 	- Reuse of config files
+
+Does the extensible service proxy always sit on the same VPC as your endpoint code?
+	- Yes, so no network hop
+
+Classifying user data as sensitive, and redacting if necessary, requires you to write complex machine learning programs. True or false?
+	- False
+	- Can use data loss prevention API
+
+What is Cloud Interconnect
+	- A service where GCP users with data-intensive or low-latency apps sign up with third party ISPs to connect to GCP
+
+What is CDN Interconnect
+	- A service where GCP users with high-volume egress data or frequent content updates to sign up with third party ISPs to connect to GCP.
+
+Why is Cloud Router an essential part of any enterprise scale VPN?
+	- When routes change on peer network, the VPN tunnel needs to be updated (deleted and re-created) disrupting network traffic.
+	- The peer gateway is often a physical device which needs to be taken down for maintenance.
+	- Static routes are slow to converge in routing protocols such as BGP; dynamic routes can be updated far more quickly.

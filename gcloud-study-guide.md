@@ -3016,9 +3016,21 @@ Images
 					- BigQuery datasets
 					- Pub/Sub topics
 				- Create metrics to view in stackdriver monitoring
+
+			```
+			# Download stackdriver install script
+			curl -O "https://repo.stackdriver.com/stack-install.sh"
+			sudo bash stack-install.sh --write-gcm
+			# Generate random data and force CPU to compress it (load strain)
+			dd if=/dev/urandom | gzip -9 >> /dev/null &
+			```
+
+	# Replaces all instances of first with second in a file
+	sed -i -e 's/first/'second/ file.txt
 		
 	Deployment Manager
 		- Deployment is a collection of resources, deployed, and managed together.
+		- Must enable Deployment Manager API
 
 		Resource
 			- Represents a single API resource and provided by Google-managed base types.
@@ -3052,3 +3064,230 @@ Images
 			- Offers watcher and waiter services
 				watcher - return whenever KV pair changes
 				waiter - pause until certain # of services are running
+
+		```
+			gcloud deployment-manager deployments create gcpingra --config=conf.yaml
+			# Change config file and then update
+			gcloud deployment-manager deployments update gcpingra --config=conf.yaml
+			# see types of resources
+			gcloud deployment-manager types list
+		```
+
+	Cloud Endpoints
+		- Helps create, share, and secure your APIs
+		- Uses the dostrobuted Extensible Service Proxy to provide low latency and high performance
+		- Provides authentication, logging, monitoring
+		- Host your API anywher Docker is supported as long as it has Internet access to GCP
+			- But ideally use:
+				- App Engine (flexible or some types of standard)
+					- Endpoint service must be turned on for standard
+				- Container Engine
+				- Compute Engine
+		- Is in a Docker container
+		- Note - proxy and API containers must be on same instance to avoid network access
+
+Identity and Security
+
+	Authentication (Who are you?)
+		Standard Flow
+			- Service Accounts
+				- Most flexible and widely supported authentication method
+				- Different GCP APIs support diff credential types, but all support service accounts
+
+				Why use?
+					- Associated with project, not user
+
+				- Create from: GCP Console or Programatically
+				- Associated with credentials via GOOGLE_APPLICATION_CREDENTIALS
+				- At any point, one set of credentials is 'active' (Application Default Credentials)
+
+				- When your code uses a client library, the strategy checks for your credentials in the following order:
+					- First ADC checks if GOOGLE_APPLICATION_CREDENTIALS is set. If so ADC uses the service account file that the variable points to.
+					- If not, ADC uses default service account that Compute, Container, App Engine, or Cloud Functions provide
+
+			- End-user accounts
+				Why use?
+					- If you'd like to differentiate between different end-users of the same project.
+					- You need to access resources on behalf of an end user of your application. (Ex. BigQuery dataset that belongs to users)
+					- You need to authenticate yourself (not as your application)
+						- Ex. Cloud Resources Manager API can create and manage projects owned by a specific user.
+
+		API Keys
+		- API keys
+			- Simple encrypted strings
+			- Can be used when calling APIs that don't need to access private user data
+			- Useful in clients such as browsers and mobile applications that don't have a backend server
+			- API key is used to track API requests associated with your project for quota and billing
+			- Can be used for ML APIs
+
+			Beware
+				- Can be used by anyone: MITM
+				- Do not identify user or application (only project)
+
+	OAuth 2.0
+		- Application needs to access resources on behalf of a specific user
+		- Application presents consent screen to user; user consents
+		- Application requests credentials from some authorization server
+		- Application then uses these credentials to access resources
+
+		- Client ID Secrets are viewable by all project owners and editors, but not readers
+		- If you revoke access to some user, remember to reset these secrets to prevent data exfiltration
+
+		How to create?
+			- GCP Console -> API Manager -> Credentials -> Create
+			- Select "OAuth Client ID"
+			- Can be used in application now.
+		
+		"Access API via GCP Project"
+			- User wants to access some API
+			- Project needs to access that API on behalf of user
+			- Project requests GCP API Manager to authenticate user by passing client secret; API manager repsonds
+			- Project has authenticated user, now gives API access
+
+	Authorization (What can you do?)
+		Identity and Access Management (IAM)
+			- Identities
+				- End-user (Google) account
+				- Service account
+				- Google group
+				- G-Suite domain
+				- Cloud Identity domain
+				- allUsers, allAuthenticatedUsers
+		- Roles
+			- lots of granular roles
+			- per resource
+
+			Primitive Roles
+				- Viewer
+					- Read only
+				- Editor
+					- Modify and delete
+					- Deploy
+				- Owner
+					- Create
+					- Add/Remove members
+
+			Custom Roles
+				- Add permissions to role a la carte
+				- Allow more granular access
+				- Can only be used for with Project or Organization - not with folders
+				- Project level custom roles only apply to resources in same project
+
+		- Resources
+			- Projects
+			- Compute Engine instances
+			- Cloud Storage buckets
+			- Vrtual Networks
+			- etc...
+
+			Resource Hierarchy
+				- Organization >> Project >> Resource
+				- Can set an IAM access control policy at any level in the resource hierarchy
+				- Resources inherit the policies of the parent resource
+				- If a child policy is in conflict with the parent, the less restrictive policy wins
+
+				Organization
+					- Not required, but helps separate projects from individual users
+					- Link with G-suite super admin
+					- Root of hierarchy, rules cascade down
+				
+				Folders
+					- Logical grouping of projects
+					- May represent departments, legal entities or teams
+					- Can have folder within folders
+
+				G Suite Features
+					- Allows an Organization resource
+					- Administer users and groups
+					- Can set up Google Cloud Directory Sync to synchronize G Suite accounts with LDAP/AD
+					- SSO integration with third party identity providers
+
+		Identity Aware Proxy (IAP)
+			- An HTTPS based way to combine all of this.
+			- Acts as an additional safeguard on a particular resource
+			- Turning on IAP for a resource causes creation of an OAuth 2.0 Client ID and secret (per resource)
+				- Don't go in and delete any of these! IAP will stop working
+
+			- Central Authorization layer for applications accessed by HTTPS
+			- Application level access control model instead of relying on network level firewalls
+			- With Cloud IAP, you can set up group-based application access:
+				- A resource could be accessible for employees and inaccessible for contractors, or only accessible to a specific department.
+
+			- IAP is an additional step, not bypassing of IAM
+				- Users and groups still need correct Cloud IAM role
+
+			Work Flow
+				- Requests come from 2 sources:
+					- App Engine
+					- Cloud Load Balancing (HTTPS)
+				- Cloud IAP checks the user's browsers credentials
+				- If none exist, the user is redirected to an OAuth 2.0 Google Account sign in
+				- Those credentials sent to IAM for authorization
+
+			IAP Limitations
+				- Will not protect against activity inside VM, someone SSH-ing into a VM or App Engine flexible environment
+				- Need to configure firewall and load balancer to disallow traffic not from serving infrastructure
+				- Need to turn on HTTP signed headers
+
+	Best Practices
+		Resource Hierarchy
+			- Use of Organization, Folders, and Projects to mirror the structure in your organization
+			- Make use of inheritance when assigning permissions
+			- Apply "principle of least privilege" while granting roles at any level
+		Groups
+			- Grant roles to groups rather than individuals
+			- If a task requires multiple roles, create a new group and assign roles and users to it
+			- Perform regular audits of group members
+		Service Accounts
+			- Define a naming convention for service accounts - the name should clearly identify its purpose
+			- Be careful when granting `serviceAccountActor` role to user
+				- That user will have all the permissions of that service account
+			- Implement key rotation
+
+	Data Protection
+		Data Exfiltration
+			- An authorized person extracts data from the secured systems where it belongs, and either shares it with unauthorized third parties or moves it to insecure systems. Can occur due to the actions of malicious or compromised actors, or accidentally.
+
+			Types
+				- Outbound email
+				- Downloads to insecure devices
+				- Uploads to external services
+				- Insecure cloud behavior
+				- Rouge admins, pending employee terminations
+
+		Exfiltration Prevention
+			Don'ts for VMs
+				- Don't allow outgoing connections to unknown addresses
+				- Don't make IP addresses public
+				- Don't allow remote connection software e.g. RDP
+				- Don't give SSH access unless absolutely necessary
+			Do's for VMs
+				- Use VPCs and firewalls between them.
+				- Use a bastion host as a chokepoint for access.
+					- Limit source IPs that can communicate with the bastion.
+					- Configure firewall rules to allow SSH traffic to private instances from only the bastion host.
+		
+		Data Loss Prevention API
+			- Understand and manage sensitive data in Cloud Storage or Datastore
+			- Easily classify and redact sensitive data
+				- Classify textual and image-based information
+				- Redact sensitive data from text files and classify
+
+			Classification
+				- Input: Raw data
+				- Output: 
+					- Information type - specific types of sensitive information.
+					- Likelihood
+					- Offset - location where that sensitive information occurs
+			
+			Redaction
+				- Input: Raw data
+				- Output: Redacted data
+
+			How?
+				ML-based
+					- Contextual analysis
+					- Pattern matching
+				Rule-based
+					- Checksum
+					- Word and phrase list
