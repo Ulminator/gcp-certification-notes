@@ -262,3 +262,44 @@ Why is Cloud Router an essential part of any enterprise scale VPN?
 	- When routes change on peer network, the VPN tunnel needs to be updated (deleted and re-created) disrupting network traffic.
 	- The peer gateway is often a physical device which needs to be taken down for maintenance.
 	- Static routes are slow to converge in routing protocols such as BGP; dynamic routes can be updated far more quickly.
+
+Data Transfer Appliance vs. Storage Transfer Service
+
+Cloud BigTable cbt tool?
+
+Kafka on Compute Engine vs. PubSub?
+
+You are building a data pipeline on Google Cloud. You need to select services that will host a deep neural network machine-learning model also hosted on Google Cloud. You also need to monitor and run jobs that could occasionally fail. What should you do?
+	- B. Use Cloud Machine Learning to host your model. Monitor the status of the Jobs object for 'failed' job states.
+	Feedback
+	B (Correct Answer) - B is correct because of the requirement to host an ML DNN and Google-recommended monitoring object (Jobs); see the links below.
+
+Cloud Dataprep?
+
+You are building a data pipeline on Google Cloud. You need to prepare source data for a machine-learning model. This involves quickly deduplicating rows from three input tables and also removing outliers from data columns where you do not know the data distribution. What should you do?
+	D. Use Cloud Dataprep to preview the data distributions in sample source data table columns. Click on each column name, click on each appropriate suggested transformation, and then click 'Add' to add each transformation to the Cloud Dataprep job.
+
+You have data stored in a Cloud Storage dataset and also in a BigQuery dataset. You need to secure the data and provide 3 different types of access levels for your Google Cloud Platform users: administrator, read/write, and read-only. You want to follow Google-recommended practices.What should you do?
+	D. Use the appropriate pre-defined IAM roles for each of the access levels needed for Cloud Storage and BigQuery. Add your users to those roles for each of the services.
+
+You are developing an application on Google Cloud that will label famous landmarks in users’ photos. You are under competitive pressure to develop the predictive model quickly. You need to keep service costs low. What should you do?
+	B. Build an application that calls the Cloud Vision API. Pass landmark locations as base64-encoded strings.
+
+You are upgrading your existing (development) Cloud Bigtable instance for use in your production environment. The instance contains a large amount of data that you want to make available for production immediately. You need to design for fastest performance. What should you do?
+ Change your Cloud Bigtable instance type from Development to Production, and set the number of nodes to at least 3. Verify that the storage type is SSD.
+
+As part of your backup plan, you set up regular snapshots of Compute Engine instances that are running. You want to be able to restore these snapshots using the fewest possible steps for replacement instances. What should you do?
+	D. Use the snapshots to create replacement instances as needed.
+
+Data Studio?
+
+Cloud Key Management Service?
+
+You are working on a project with two compliance requirements. The first requirement states that your developers should be able to see the Google Cloud Platform billing charges for only their own projects. The second requirement states that your finance team members can set budgets and view the current charges for all projects in the organization. The finance team should not be able to view the project contents. You want to set permissions. What should you do?
+	B. Add the finance team members to the Billing Administrator role for each of the billing accounts that they need to manage. Add the developers to the Viewer role for the Project.
+
+You want to display aggregate view counts for your YouTube channel data in Data Studio. You want to see the video tiles and view counts summarized over the last 30 days. You also want to segment the data by the Country Code using the fewest possible steps. What should you do?
+	B. Set up a YouTube data source for your channel data for Data Studio. Set Views as the metric and set Video Title and Country Code as report dimensions.
+
+You are building storage for files for a data pipeline on Google Cloud. You want to support JSON files. The schema of these files will occasionally change. Your analyst teams will use running aggregate ANSI SQL queries on this data. What should you do?
+	B. Use BigQuery for storage. Select "Automatically detect" in the Schema section.
