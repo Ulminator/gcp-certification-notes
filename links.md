@@ -57,3 +57,5 @@ https://martinfowler.com/bliki/DataLake.html
 https://use-the-index-luke.com/
 
 https://diogoalexandrefranco.github.io/data-engineering-resources/
+
+http://jayendrapatil.com/google-cloud-professional-data-engineer-certification-learning-path/
