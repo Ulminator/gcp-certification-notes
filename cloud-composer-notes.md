@@ -1,30 +1,3 @@
-Reducing Loss
-
-  Hyperparmeters are the configuration settings used to tune how the model is trained.
-
-  Convergence: When loss stops changing or at least changes extremely slowly.
-
-  Gradient is a vector.
-
-  Learning rate is a scalar.
-
-  Gradient is multiplied by the learning rate.
-
-  Stochastic Gradient Descent
-    - Random samples from data set to estimate.
-    - Uses a batch size of 1 per iteration.
-    - Works (given enough iterations), but noisy
-
-  Mini-Batch Stochastic Gradient Descent
-    - Compromise between full batch and SGD.
-    - Typically between 10 - 10K examples chosen at random.
-    - Reduces noise, but still more efficient than full-batch.
-
-Skipped `First Steps with TF` section.
-
-
-
-
 SEND FEEDBACK
 Solutions
 Automating infrastructure with Cloud Composer
