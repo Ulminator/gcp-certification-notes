@@ -2,6 +2,12 @@ https://medium.com/@sathishvj/notes-from-my-google-cloud-professional-data-engin
 
 https://medium.com/datadriveninvestor/how-to-prepare-for-google-cloud-certified-professional-data-engineer-exam-and-pass-it-on-your-a7bdef8aa8d0
 
+https://linuxacademy.com/google-cloud-platform/training/course/name/google-cloud-data-engineer
+
+https://github.com/ml874/Data-Engineering-on-GCP-Cheatsheet
+
+https://developers.google.com/machine-learning/glossary/
+
 https://gcp.solutions/
 
 https://landing.google.com/sre/books/
