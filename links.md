@@ -16,6 +16,8 @@ https://cloud.google.com/certification/data-engineer
 
 https://cloud.google.com/storage-options/
 
+https://deploy.live/blog/google-cloud-certified-professional-data-engineer/
+
 
 ------------------
 MISC
