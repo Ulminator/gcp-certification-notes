@@ -18,6 +18,7 @@ https://cloud.google.com/storage-options/
 
 https://deploy.live/blog/google-cloud-certified-professional-data-engineer/
 
+https://cloud.google.com/blog/products/ai-machine-learning/all-ai-announcements-from-google-next19-the-smartest-laundry-list
 
 ------------------
 MISC
