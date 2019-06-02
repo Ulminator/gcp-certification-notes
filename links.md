@@ -8,6 +8,14 @@ https://github.com/ml874/Data-Engineering-on-GCP-Cheatsheet
 
 https://developers.google.com/machine-learning/glossary/
 
+https://developers.google.com/machine-learning/crash-course/ml-intro
+
+https://developers.google.com/machine-learning/guides/rules-of-ml/
+
+https://www.tensorflow.org/tfx/guide
+
+https://interactive.linuxacademy.com/diagrams/TheDataDossier.html
+
 https://gcp.solutions/
 
 https://landing.google.com/sre/books/
