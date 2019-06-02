@@ -9,3 +9,5 @@ spark mirroring
 mariadb integration with stackdriver
 
 cloud build and cloud scheduler
+
+How to verify that ETL migrated to BigQuery produced equal results.
