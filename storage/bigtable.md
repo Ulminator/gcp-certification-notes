@@ -33,17 +33,6 @@
     - Documents or highly structured hierarchies
     - Immutable blobs > 10MB each
 
-## IAM
-- Project wide or instance level
-- Bigtable.admin
-- Bigtable.user
-    - App developer or service accounts.
-- Bigtable.reader
-    - Data scientists, dashboard generators, and other data analytics.
-- Bigtable.viewer
-    - Provides no data access.
-    - Minimal set of conditions to access the GCP Console for BigTable.
-
 ## 4-Dimensional Data Model
 - Row-Key
     - Uniquely identifies a row
@@ -182,3 +171,14 @@
 - Compared to DataStore
     - BigTable queries are on the Key rather than an Index
     - BigTable supports atomicity only on a single row – no transactions
+    
+## IAM
+- Project wide or instance level
+- Bigtable.admin
+- Bigtable.user
+    - App developer or service accounts.
+- Bigtable.reader
+    - Data scientists, dashboard generators, and other data analytics.
+- Bigtable.viewer
+    - Provides no data access.
+    - Minimal set of conditions to access the GCP Console for BigTable.
