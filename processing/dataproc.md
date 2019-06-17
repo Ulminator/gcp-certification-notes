@@ -8,6 +8,9 @@
 - Used if **migrating existing on-premise Hadoop or Spark infrastructure** to GCP without redevelopment effort.
 - Can sale even when jobs are running.
 - Use Dataflow for streaming instead. **This is better for batch.**
+
+    ![alt text](../images/dataflow-vs-proc.svg)
+
 - Connecting to Web Interface of Dataproc Cluster
     - Allow necessary web ports access via firewall rules, and limit access to your network.
         - Tcp:8088 (Cluster Manager)

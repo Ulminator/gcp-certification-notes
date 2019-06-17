@@ -14,7 +14,7 @@ Those categories are explained in more detail [here.](https://cloud.google.com/c
 ## Ingestion
 
 * [Transfer Appliance](ingest/transfer-appliance.md)
-* [Transfer Appliance](ingest/transfer-service.md)
+* [Transfer Service](ingest/transfer-service.md)
 
 ## Storage
 

@@ -103,16 +103,29 @@
         - Save model checkpoints to this GCS path.
         - Useful for VM restarts.
         - Used for job output.
-    - GPUs
-        - More effective at running certain operations on tensor data than adding another machine with one or more CPU cores.
-        - Can specify GPU-enabled machines to run your job.
-    - TPUs
-        - Tensor Processing Units
-        - Google’s custom developed ASICs used to accelerate machine learning workloads with TensorFlow.
-        - Steps
-            - Authorize Cloud TPU service account name associated with GCP project
-            - Add service account as a member of your project with role Cloud ML Service Agent.
-        - Only in us-central1 currently.
+    - CPU, GPU, or TPU?
+        - CPUs
+            - Quick prototyping that requires maximum flexibility
+            - Simple models that do not take long to train
+            - Small models with small effective batch sizes
+            - Models that are dominated by custom TensorFlow operations written in C++
+            - Models that are limited by available I/O or the networking bandwidth of the host system.
+        - GPUs
+            - Models that are not written in TensorFlow or cannot be written in TensorFlow.
+            - Models for which source does not exist or is too onerous to change.
+            - Models with a significant number of custom TensorFlow operations that must run at least partially on CPUs
+            - Models with TensorFlow ops that are not available on Cloud TPU
+            - Medium to large models with larger effective batch sizes
+        - TPUs
+            - Tensor Processing Units
+            - Google’s custom developed ASICs used to accelerate machine learning workloads with TensorFlow.
+            - Models dominated by matrix computations
+            - Models with no custom TensorFlow operations inside the main training loop
+            - Models that train for weeks or months
+            - Larger and very large models with very large effective batch sizes.
+            - Steps
+                - Authorize Cloud TPU service account name associated with GCP project
+                - Add service account as a member of your project with role Cloud ML Service Agent.
 
 ## Hyperparameter Tuning
 - –config hptuning_config.yaml

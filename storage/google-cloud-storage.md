@@ -58,6 +58,22 @@
     - Permanently delete an archived version
 - Archived versions retain ACLs and does not necessarily have same permissions as live version of object.
 
+## IAM vs ACLs
+- IAM
+    - Apply to all objects within a bucket.
+    - Standard Roles
+        - Storage.objectCreator
+        - Storage.objectViewer
+        - Storage.objectAdmin
+        - Storage.admin – full control over buckets
+            - Can apply to a specific bucket.
+    - Primitive Roles
+- ACL (Access Control List)
+    - Use if need to customize access to individual objects within a bucket.
+    - Permissions – What actions can be performed.
+    - Scopes – Which defines who can perform the actions (user or group)
+    - Reader/Writer/Owner
+
 ## Encryption
 
 ### Encryption at rest (Google-Managed Encryption Keys)
