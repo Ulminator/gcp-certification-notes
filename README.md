@@ -11,6 +11,12 @@ This test assesses your ability to:
 
 Those categories are explained in more detail [here.](https://cloud.google.com/certification/guides/data-engineer/)
 
+At a testing facility you will have 2 hours to solve 50 multiple choice questions on a computer. 
+You can mark questions you are unsure about and can review them towards the end of the test. After you submit your test, 
+you will see a provisional result of either PASS or FAIL. The official results will be sent to you in the next few days. If 
+everything goes well you'll receive this [certification](https://www.credential.net/coxzk5me?key=acd89490bdfe162f06b1b39aac3ba74f67c8a244e5ab638e3d52cd23116071f3).
+Good luck!
+
 ## Ingestion
 
 * [Transfer Appliance](ingest/transfer-appliance.md)
