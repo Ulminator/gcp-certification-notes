@@ -13,14 +13,14 @@ Those categories are explained in more detail [here.](https://cloud.google.com/c
 
 ## Ingestion
 
-Transfer Appliance
-
+* [Transfer Appliance](ingest/transfer-appliance.md)
+* [Transfer Appliance](ingest/transfer-service.md)
 
 ## Storage
 
 ![alt text](./images/storage-options.svg)
 
-* [Google Cloud Storage (GCS)](./storage/google-cloud-storage.md)
+* [Google Cloud Storage (GCS)](storage/google-cloud-storage.md)
 
 * [Cloud SQL](storage/cloud-sql.md)
 
@@ -72,4 +72,4 @@ Transfer Appliance
 
 ## Security
 
-* [Security](storage/google-cloud-storage.md)
+* [Cloud IAM](security/cloud-iam.md)
