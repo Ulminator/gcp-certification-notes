@@ -20,9 +20,8 @@
                 - Change in the data between when you train and when you serve.
                 - Feedback loop between model and algorithm.
         - Uses Apache Beam
-
-## Kubeflow Pipelines
-- Has UI for managing and tracking experiments, jobs, and runs.
-- An engine for scheduling multi-step ML workflows
-- An SDK for defining and manipulating pipelines and components
-- Notebooks for interacting with the system using the SDK
+- Kubeflow Pipelines
+    - Has UI for managing and tracking experiments, jobs, and runs.
+    - An engine for scheduling multi-step ML workflows
+    - An SDK for defining and manipulating pipelines and components
+    - Notebooks for interacting with the system using the SDK
