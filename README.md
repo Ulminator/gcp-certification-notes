@@ -73,3 +73,65 @@ Those categories are explained in more detail [here.](https://cloud.google.com/c
 ## Security
 
 * [Cloud IAM](security/cloud-iam.md)
+
+## Supplemental Links
+
+### Blogs
+
+https://deploy.live/blog/google-cloud-certified-professional-data-engineer/
+
+https://martinfowler.com/bliki/DataLake.html
+
+https://diogoalexandrefranco.github.io/data-engineering-resources/
+
+### Medium Articles
+
+https://medium.com/@sathishvj/notes-from-my-google-cloud-professional-data-engineer-exam-530d11966aa0
+
+https://github.com/ml874/Data-Engineering-on-GCP-Cheatsheet
+
+https://medium.freecodecamp.org/the-rise-of-the-data-engineer-91be18f1e603
+
+https://medium.com/@rchang/a-beginners-guide-to-data-engineering-part-i-4227c5c457d7
+
+### Courses
+
+https://linuxacademy.com/google-cloud-platform/training/course/name/google-cloud-data-engineer
+https://interactive.linuxacademy.com/diagrams/TheDataDossier.html
+
+https://www.udemy.com/gcp-data-engineer-and-cloud-architect/
+
+### Machine Learning
+
+https://developers.google.com/machine-learning/glossary/
+
+https://developers.google.com/machine-learning/crash-course/ml-intro
+
+https://developers.google.com/machine-learning/guides/rules-of-ml/
+
+https://www.tensorflow.org/tfx/guide
+
+https://medium.com/@14prakash/back-propagation-is-very-simple-who-made-it-complicated-97b794c97e5c
+
+### Architecture Solutions on GCP:
+
+- https://gcp.solutions/
+
+### Cloud Next
+
+- https://cloud.google.com/blog/products/ai-machine-learning/all-ai-announcements-from-google-next19-the-smartest-laundry-list
+
+### Apache Beam
+
+- https://cloud.google.com/blog/products/gcp/why-apache-beam-a-google-perspective
+- https://www.zdnet.com/article/apache-beam-and-spark-new-coopetition-for-squashing-the-lambda-architecture/
+
+### Books: 
+
+[Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/printings/ESLII_print12.pdf)
+
+[Foundations of Data Science](https://www.cs.cornell.edu/jeh/book.pdf)
+
+[High Dimensional Probability](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.pdf)
+
+[Understanding Machine Learning: From Theory to Algorithms](https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/understanding-machine-learning-theory-algorithms.pdf)
