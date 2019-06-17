@@ -1,7 +1,5 @@
 # Google Cloud Data Engineer Certification Study Guide
 
-![alt_text](./images/data-engineer-cert.png =700x700)
-
 ## Overview
 
 This test assesses your ability to:
