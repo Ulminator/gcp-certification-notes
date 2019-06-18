@@ -100,6 +100,10 @@ Good luck!
 - https://interactive.linuxacademy.com/diagrams/TheDataDossier.html
 - https://www.udemy.com/gcp-data-engineer-and-cloud-architect/
 
+### Hands On Learning
+
+- https://github.com/GoogleCloudPlatform/training-data-analyst
+
 ### Machine Learning
 
 - https://developers.google.com/machine-learning/glossary/
